@@ -8,8 +8,11 @@ import Modal from '@/components/ui/Modal';
 import Button from '@/components/ui/Button';
 import { getProjects, createProject } from '@/services/projectService';
 import { Project, CreateProjectInput } from '@/types';
+import { useAuthStore } from '@/hooks/useAuth';
 
 export default function ProjectsPage() {
+  const { user } = useAuthStore();
+  const isAdmin = user?.role === 'ADMIN';
   const [projects, setProjects] = useState<Project[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -36,7 +39,7 @@ export default function ProjectsPage() {
       setIsModalOpen(false);
       fetchProjects();
     } catch (err: any) {
-      throw new Error(err.response?.data?.message || 'Failed to create project');
+      setError(err.response?.data?.message || 'Failed to create project');
     }
   };
 
@@ -44,9 +47,11 @@ export default function ProjectsPage() {
     <div>
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Projects</h1>
-        <Button onClick={() => setIsModalOpen(true)}>
-          New Project
-        </Button>
+        {isAdmin && (
+          <Button onClick={() => setIsModalOpen(true)}>
+            New Project
+          </Button>
+        )}
       </div>
 
       {error && (

@@ -1,5 +1,5 @@
 import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
+import jwt, { Secret } from 'jsonwebtoken';
 import { Response } from 'express';
 
 export const hashPassword = async (password: string): Promise<string> => {
@@ -19,8 +19,8 @@ export const generateToken = (payload: {
   email: string;
   role: string;
 }): string => {
-  return jwt.sign(payload, process.env.JWT_SECRET!, {
-    expiresIn: process.env.JWT_EXPIRES_IN || '7d',
+  return jwt.sign(payload, process.env.JWT_SECRET as Secret, {
+    expiresIn: '1h',
   });
 };
 

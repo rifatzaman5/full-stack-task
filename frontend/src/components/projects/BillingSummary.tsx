@@ -1,6 +1,6 @@
 'use client';
 
-import { BillingSummary } from '@/types';
+import type { BillingSummary } from '@/types';
 
 interface BillingSummaryProps {
   summary: BillingSummary;

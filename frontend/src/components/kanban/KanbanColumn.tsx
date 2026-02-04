@@ -2,7 +2,7 @@
 
 import { useDroppable } from '@dnd-kit/core';
 import { TimeLog, TimeLogStatus } from '@/types';
-import TimeLogCard from './TimeLogCard';
+import TimeLogCard from '../kanban/TimeLogCard';
 
 interface KanbanColumnProps {
   id: TimeLogStatus;

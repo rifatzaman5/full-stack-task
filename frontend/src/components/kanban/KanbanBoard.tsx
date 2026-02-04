@@ -11,8 +11,8 @@ import {
   useSensors,
 } from '@dnd-kit/core';
 import { TimeLog, TimeLogStatus } from '@/types';
-import KanbanColumn from './KanbanColumn';
-import TimeLogCard from './TimeLogCard';
+import KanbanColumn from '../kanban/KanbanColumn';
+import TimeLogCard from '../kanban/TimeLogCard';
 
 interface KanbanBoardProps {
   timeLogs: TimeLog[];

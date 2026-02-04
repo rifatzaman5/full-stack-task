@@ -56,7 +56,7 @@ export const useProjects = (): ProjectsState => {
       setIsLoading(true);
       setError(null);
       try {
-        await createTimeLog({ ...data, projectId });
+        await createTimeLog({ ...data, projectId, hours: data.hours ?? 0, logDate: data.logDate ?? '', status: data.status ?? 'TODO' });
       } catch (err: any) {
         setError(err.response?.data?.message || 'Failed to create time log');
         throw err;

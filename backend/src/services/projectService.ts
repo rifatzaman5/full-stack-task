@@ -168,14 +168,14 @@ export const getBillingSummary = async (projectId: string) => {
 
   // Calculate totals
   const totalHours = project.timeLogs.reduce(
-    (sum, log) => sum + Number(log.hours),
+    (sum: number, log: { hours: string }) => sum + Number(log.hours),
     0
   );
   const totalAmount = totalHours * Number(project.billingRate);
 
   // Group by user
   const hoursByUser: Record<string, { name: string; hours: number }> = {};
-  project.timeLogs.forEach((log) => {
+  project.timeLogs.forEach((log: { hours: string; userId: string; user: { name: string } }) => {
     if (!hoursByUser[log.userId]) {
       hoursByUser[log.userId] = { name: log.user.name, hours: 0 };
     }
@@ -184,7 +184,7 @@ export const getBillingSummary = async (projectId: string) => {
 
   // Group by date
   const hoursByDate: Record<string, number> = {};
-  project.timeLogs.forEach((log) => {
+  project.timeLogs.forEach((log: { hours: string; logDate: string }) => {
     const date = new Date(log.logDate).toISOString().split('T')[0];
     hoursByDate[date] = (hoursByDate[date] || 0) + Number(log.hours);
   });
