@@ -37,7 +37,7 @@ export default function LoginPage() {
         </div>
         
         <p className="mt-8 text-center text-sm text-gray-500">
-          Demo accounts: admin@demo.com / employee@demo.com (password: demo123)
+          Demo accounts: admin@demo.com / admin123 | employee@demo.com / employee123
         </p>
       </div>
     </div>
