@@ -46,7 +46,9 @@ export const createProject = async (input: CreateProjectInput) => {
 
 export const getProjects = async (userId: string, role: string) => {
   const projects = await prisma.project.findMany({
-    where: role === 'ADMIN' ? {} : { userId },
+    where: role === 'ADMIN' 
+      ? {} 
+      : { status: { not: 'ARCHIVED' } }, // Employees can see all non-archived projects
     include: {
       user: {
         select: {

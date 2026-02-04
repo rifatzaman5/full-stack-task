@@ -10,10 +10,13 @@ import Button from '@/components/ui/Button';
 import { getProject, getBillingSummary, archiveProject } from '@/services/projectService';
 import { createTimeLog, updateTimeLogStatus } from '@/services/timeLogService';
 import { Project, BillingSummary as BillingSummaryType, TimeLog, CreateTimeLogInput, TimeLogStatus } from '@/types';
+import { useAuthStore } from '@/hooks/useAuth';
 
 export default function ProjectDetailPage() {
   const params = useParams();
   const projectId = params.id as string;
+  const { user } = useAuthStore();
+  const isAdmin = user?.role === 'ADMIN';
 
   const [project, setProject] = useState<Project | null>(null);
   const [billingSummary, setBillingSummary] = useState<BillingSummaryType | null>(null);
@@ -48,7 +51,7 @@ export default function ProjectDetailPage() {
       setIsTimeLogModalOpen(false);
       fetchProject();
     } catch (err: any) {
-      throw new Error(err.response?.data?.message || 'Failed to create time log');
+      setError(err.response?.data?.message || 'Failed to create time log');
     }
   };
 
@@ -109,9 +112,11 @@ export default function ProjectDetailPage() {
           <Button variant="outline" onClick={() => setIsTimeLogModalOpen(true)}>
             Log Time
           </Button>
-          <Button variant="secondary" onClick={handleArchiveProject}>
-            Archive
-          </Button>
+          {isAdmin && (
+            <Button variant="secondary" onClick={handleArchiveProject}>
+              Archive
+            </Button>
+          )}
         </div>
       </div>
 
