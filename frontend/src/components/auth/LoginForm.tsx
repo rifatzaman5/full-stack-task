@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
 import { login } from '@/services/authService';
+import { useAuthStore } from '@/hooks/useAuth';
 
 interface LoginFormData {
   email: string;
@@ -14,6 +15,7 @@ interface LoginFormData {
 
 export default function LoginForm() {
   const router = useRouter();
+  const { setAuth } = useAuthStore();
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   
@@ -26,6 +28,7 @@ export default function LoginForm() {
     try {
       const response = await login(data);
       localStorage.setItem('auth_token', response.token);
+      setAuth(response.user, response.token); // Store user and token in auth store
       router.push('/projects');
     } catch (err: any) {
       setError(err.response?.data?.message || 'Login failed');
