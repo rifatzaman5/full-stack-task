@@ -1,55 +1,53 @@
 # Project Billing & Time Tracking System
 
-A full-stack application for managing projects, tracking time entries, and calculating billing summaries with a drag-and-drop Kanban board.
+A full-stack application for managing projects, tracking time entries, and calculating billing summaries. Features JWT authentication, role-based access control, and a drag-and-drop Kanban board.
 
-## 🚀 Tech Stack
-
-### Backend
-
-- **Node.js** + **Express**
-- **TypeScript**
-- **Prisma ORM** with PostgreSQL
-- **JWT** Authentication
-- **bcrypt** for password hashing
-
-### Frontend
-
-- **Next.js 14** (App Router)
-- **TypeScript**
-- **Tailwind CSS**
-- **@dnd-kit** for drag-and-drop
-- **Zustand** for state management
-
-## ✨ Features
+## 🚀 Features
 
 ### Authentication
 
-- JWT-based authentication
-- Role-based access control:
-  - **Admin**: Full access to all projects and time logs
-  - **Employee**: Can only manage their own time entries
+- **JWT-based authentication** with secure password hashing
+- **Role-based access control**:
+  - **Admin**: Create, update, archive projects; view all data
+  - **Employee**: Log time entries; view projects
 
 ### Project Management
 
 - Create, update, and archive projects
 - Track billing rates per project
-- Project status: Active / Completed / Archived
+- View project details with time logs
 
 ### Time Tracking
 
-- Log time entries with notes
-- Drag & drop Kanban board (Todo / In Progress / Done)
-- Validation rules:
-  - Hours must be positive (minimum 0.5)
-  - Maximum 12 hours per entry
-  - Maximum 12 hours per day
+- Log time entries with hours, notes, and date
+- **Drag & Drop Kanban Board** for managing time log status (Todo → In Progress → Done)
+- Validation: Hours must be positive, max 12 hours per day
 
 ### Billing Summary
 
-- Total hours and amount calculation
+- Calculate total hours and amount (hours × billing rate)
 - Hours grouped by user
 - Hours grouped by date
-- 30-second caching for performance
+- **30-second cache** for performance optimization
+
+## 🛠️ Tech Stack
+
+### Backend
+
+- **Runtime**: Node.js with TypeScript
+- **Framework**: Express.js
+- **Database**: PostgreSQL with Prisma ORM
+- **Authentication**: JSON Web Tokens (JWT)
+- **Caching**: NodeCache (30-second billing summary cache)
+
+### Frontend
+
+- **Framework**: Next.js 14 (App Router)
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **Drag & Drop**: @dnd-kit
+- **State Management**: Zustand
+- **HTTP Client**: Axios
 
 ## 📁 Project Structure
 
@@ -58,25 +56,44 @@ project-billing-system/
 ├── backend/
 │   ├── prisma/
 │   │   ├── schema.prisma
-│   │   └── migrations/
+│   │   └── seed.ts
 │   ├── src/
 │   │   ├── config/
+│   │   │   └── database.ts
 │   │   ├── controllers/
+│   │   │   ├── authController.ts
+│   │   │   ├── projectController.ts
+│   │   │   └── timeLogController.ts
 │   │   ├── middleware/
+│   │   │   ├── auth.ts
+│   │   │   └── validation.ts
 │   │   ├── routes/
+│   │   │   ├── authRoutes.ts
+│   │   │   ├── projectRoutes.ts
+│   │   │   └── timeLogRoutes.ts
 │   │   ├── services/
+│   │   │   ├── authService.ts
+│   │   │   ├── projectService.ts
+│   │   │   └── timeLogService.ts
 │   │   ├── utils/
+│   │   │   ├── cache.ts
+│   │   │   └── helpers.ts
 │   │   └── index.ts
 │   ├── .env.example
-│   ├── package.json
-│   └── tsconfig.json
+│   └── package.json
 ├── frontend/
 │   ├── src/
 │   │   ├── app/
-│   │   │   ├── (auth)/login, signup
-│   │   │   ├── (dashboard)/projects
+│   │   │   ├── (auth)/
+│   │   │   │   ├── login/
+│   │   │   │   └── signup/
+│   │   │   ├── (dashboard)/
+│   │   │   │   ├── projects/
+│   │   │   │   │   ├── [id]/
+│   │   │   │   │   └── page.tsx
+│   │   │   │   └── layout.tsx
 │   │   │   ├── layout.tsx
-│   │   │   └── providers.tsx
+│   │   │   └── page.tsx
 │   │   ├── components/
 │   │   │   ├── auth/
 │   │   │   ├── dashboard/
@@ -89,12 +106,14 @@ project-billing-system/
 │   │   ├── lib/
 │   │   └── types/
 │   ├── .env.example
-│   ├── package.json
-│   └── tailwind.config.js
+│   └── package.json
+├── docs/
+│   ├── API.md
+│   └── ERD.md
 └── README.md
 ```
 
-## 🛠️ Setup Instructions
+## 🚦 Setup Instructions
 
 ### Prerequisites
 
@@ -105,8 +124,8 @@ project-billing-system/
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/rifatzaman5/full-stack-task.git
-cd full-stack-task
+git clone <your-repo-url>
+cd project-billing-system
 ```
 
 ### 2. Backend Setup
@@ -117,21 +136,22 @@ cd backend
 # Install dependencies
 npm install
 
-# Create .env file from example
+# Copy environment file
 cp .env.example .env
-# Edit .env with your database connection string and JWT secret
+
+# Edit .env with your database credentials
+# DATABASE_URL="postgresql://user:password@localhost:5432/project_billing?schema=public"
+# JWT_SECRET="your-super-secret-jwt-key"
 
 # Generate Prisma client
 npx prisma generate
 
-# Run database migrations
-npx prisma migrate dev --name init
+# Push schema to database
+npx prisma db push
 
-# Start the backend server
-npm run dev
+# (Optional) Seed demo data
+npx prisma db seed
 ```
-
-The backend will run on `http://localhost:5000`
 
 ### 3. Frontend Setup
 
@@ -141,78 +161,58 @@ cd frontend
 # Install dependencies
 npm install
 
-# Create .env.local file from example
+# Copy environment file
 cp .env.example .env.local
 
-# Start the frontend development server
+# Edit .env.local with API URL
+# NEXT_PUBLIC_API_URL=http://localhost:5000/api
+
+# Start development server
 npm run dev
 ```
 
-The frontend will run on `http://localhost:3000`
+### 4. Access the Application
 
-### 4. Environment Variables
+- **Frontend**: http://localhost:3000
+- **Backend API**: http://localhost:5000
 
-#### Backend (.env)
+## 👤 Demo Accounts
 
-```env
-DATABASE_URL="postgresql://user:password@localhost:5432/project_billing?schema=public"
-JWT_SECRET="your-super-secret-jwt-key"
-PORT=5000
-```
+After running the seed script, you can use these accounts:
 
-#### Frontend (.env.local)
+| Role     | Email             | Password    |
+| -------- | ----------------- | ----------- |
+| Admin    | admin@demo.com    | admin123    |
+| Employee | employee@demo.com | employee123 |
 
-```env
-NEXT_PUBLIC_API_URL=http://localhost:5000/api
-```
+## 📚 API Documentation
 
-## 📚 API Endpoints
+See [API.md](docs/API.md) for detailed API endpoint documentation.
 
-### Authentication
+## 🗄️ Database Schema
 
-| Method | Endpoint             | Description             |
-| ------ | -------------------- | ----------------------- |
-| POST   | `/api/auth/register` | Register new user       |
-| POST   | `/api/auth/login`    | Login and get JWT token |
-| GET    | `/api/auth/me`       | Get current user        |
+See [ERD.md](docs/ERD.md) for the entity relationship diagram and database schema.
 
-### Projects
+## 🔐 Security Features
 
-| Method | Endpoint                            | Description         |
-| ------ | ----------------------------------- | ------------------- |
-| GET    | `/api/projects`                     | List all projects   |
-| POST   | `/api/projects`                     | Create new project  |
-| GET    | `/api/projects/:id`                 | Get project details |
-| PUT    | `/api/projects/:id`                 | Update project      |
-| DELETE | `/api/projects/:id`                 | Archive project     |
-| GET    | `/api/projects/:id/billing-summary` | Get billing summary |
+- **Password Hashing**: bcrypt with 10 salt rounds
+- **JWT Tokens**: 24-hour expiration
+- **Input Validation**: Server-side validation on all inputs
+- **Authorization**: Role-based access control on all routes
+- **Protected APIs**: All routes (except auth) require valid JWT token
 
-### Time Logs
+## ⚡ Performance Optimizations
 
-| Method | Endpoint             | Description     |
-| ------ | -------------------- | --------------- |
-| GET    | `/api/time-logs`     | List time logs  |
-| POST   | `/api/time-logs`     | Create time log |
-| PUT    | `/api/time-logs/:id` | Update time log |
-| DELETE | `/api/time-logs/:id` | Delete time log |
+- **Database Indexes**: Indexes on `projectId`, `userId`, and `logDate` for faster queries
+- **Caching**: 30-second cache on billing summary endpoint to reduce database load
 
-## 🔒 Security Features
+## 🎨 UI Features
 
-- Password hashing with bcrypt
-- JWT token authentication
-- Role-based authorization
-- Input validation on all endpoints
-- Protected API routes
+- Responsive design with Tailwind CSS
+- Drag & drop Kanban board for time logs
+- Modal dialogs for forms
+- Real-time status updates
 
-## 🎨 UI Components
+## 📝 License
 
-- **Login/Signup Pages**: Authentication forms
-- **Projects List**: Grid view of all projects
-- **Project Detail**: Project info with Kanban board
-- **Kanban Board**: Drag & drop time logs (Todo/In Progress/Done)
-- **Billing Summary**: Total hours, amount, and breakdowns
-- **Time Log Form**: Add/edit time entries
-
-## 📄 License
-
-This project is open source and available under the MIT License.
+MIT License
