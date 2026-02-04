@@ -11,6 +11,8 @@ import { getProject, getBillingSummary, archiveProject } from '@/services/projec
 import { createTimeLog, updateTimeLogStatus } from '@/services/timeLogService';
 import { Project, BillingSummary as BillingSummaryType, TimeLog, CreateTimeLogInput, TimeLogStatus } from '@/types';
 import { useAuthStore } from '@/hooks/useAuth';
+import { ArrowLeft, Clock, Archive } from 'lucide-react';
+import Link from 'next/link';
 
 export default function ProjectDetailPage() {
   const params = useParams();
@@ -85,7 +87,7 @@ export default function ProjectDetailPage() {
 
   if (error && !project) {
     return (
-      <div className="bg-red-50 text-red-600 p-4 rounded-lg">
+      <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
         {error}
       </div>
     );
@@ -100,36 +102,74 @@ export default function ProjectDetailPage() {
   }
 
   return (
-    <div>
-      <div className="flex justify-between items-start mb-6">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">{project.name}</h1>
-          {project.description && (
-            <p className="text-gray-600 mt-1">{project.description}</p>
-          )}
+    <div className="space-y-6">
+      {/* Back button and header */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center space-x-4">
+          <Link 
+            href="/projects" 
+            className="flex items-center text-gray-600 hover:text-gray-900 transition-colors"
+          >
+            <ArrowLeft className="h-5 w-5 mr-2" />
+            Back to Projects
+          </Link>
         </div>
-        <div className="flex space-x-3">
-          <Button variant="outline" onClick={() => setIsTimeLogModalOpen(true)}>
-            Log Time
+        <div className="flex items-center space-x-3">
+          <Button 
+            variant="outline" 
+            onClick={() => setIsTimeLogModalOpen(true)}
+            className="flex items-center space-x-2"
+          >
+            <Clock className="h-4 w-4" />
+            <span>Log Time</span>
           </Button>
           {isAdmin && (
-            <Button variant="secondary" onClick={handleArchiveProject}>
-              Archive
+            <Button 
+              variant="secondary" 
+              onClick={handleArchiveProject}
+              className="flex items-center space-x-2"
+            >
+              <Archive className="h-4 w-4" />
+              <span>Archive</span>
             </Button>
           )}
         </div>
       </div>
 
+      {/* Project Info */}
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">{project.name}</h1>
+            {project.description && (
+              <p className="text-gray-600 mt-2">{project.description}</p>
+            )}
+            {project.user && (
+              <p className="text-sm text-gray-500 mt-2">Created by {project.user.name}</p>
+            )}
+          </div>
+          <div className={`px-4 py-2 rounded-lg text-sm font-medium ${
+            project.status === 'ACTIVE' ? 'bg-emerald-100 text-emerald-700' :
+            project.status === 'COMPLETED' ? 'bg-blue-100 text-blue-700' :
+            'bg-gray-100 text-gray-700'
+          }`}>
+            {project.status}
+          </div>
+        </div>
+      </div>
+
+      {/* Error Message */}
       {error && (
-        <div className="bg-red-50 text-red-600 p-4 rounded-lg mb-4">
+        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
           {error}
         </div>
       )}
 
+      {/* Kanban and Billing Summary */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Time Tracking</h2>
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <h2 className="text-lg font-semibold text-gray-900 mb-6">Time Tracking Board</h2>
             <KanbanBoard
               timeLogs={project.timeLogs || []}
               onStatusChange={handleStatusChange}
@@ -141,6 +181,7 @@ export default function ProjectDetailPage() {
         </div>
       </div>
 
+      {/* Time Log Modal */}
       <Modal
         isOpen={isTimeLogModalOpen}
         onClose={() => setIsTimeLogModalOpen(false)}

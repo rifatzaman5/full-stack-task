@@ -30,10 +30,10 @@ export default function KanbanBoard({ timeLogs, onStatusChange }: KanbanBoardPro
     })
   );
 
-  const columns: { id: TimeLogStatus; title: string }[] = [
-    { id: 'TODO', title: 'Todo' },
-    { id: 'IN_PROGRESS', title: 'In Progress' },
-    { id: 'DONE', title: 'Done' },
+  const columns: { id: TimeLogStatus; title: string; color: string }[] = [
+    { id: 'TODO', title: 'To Do', color: 'bg-gray-500' },
+    { id: 'IN_PROGRESS', title: 'In Progress', color: 'bg-amber-500' },
+    { id: 'DONE', title: 'Done', color: 'bg-emerald-500' },
   ];
 
   const getTimeLogsByStatus = (status: TimeLogStatus) => {
@@ -62,12 +62,13 @@ export default function KanbanBoard({ timeLogs, onStatusChange }: KanbanBoardPro
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {columns.map((column) => (
           <KanbanColumn
             key={column.id}
             id={column.id}
             title={column.title}
+            color={column.color}
             timeLogs={getTimeLogsByStatus(column.id)}
           />
         ))}
