@@ -1,0 +1,83 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  EMPLOYEE
+}
+
+enum ProjectStatus {
+  ACTIVE
+  COMPLETED
+  ARCHIVED
+}
+
+enum TimeLogStatus {
+  TODO
+  IN_PROGRESS
+  DONE
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  name      String
+  role      Role     @default(EMPLOYEE)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  timeLogs  TimeLog[]
+  projects  Project[]
+
+  @@map("users")
+}
+
+model Project {
+  id            String        @id @default(uuid())
+  name          String
+  description   String?
+  billingRate   Decimal       @db.Decimal(10, 2)
+  status        ProjectStatus @default(ACTIVE)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  // Relations
+  userId        String
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  timeLogs      TimeLog[]
+
+  @@map("projects")
+  @@index([userId])
+}
+
+model TimeLog {
+  id        String       @id @default(uuid())
+  hours     Decimal      @db.Decimal(5, 2)
+  notes     String?
+  logDate   DateTime     @db.Date
+  status    TimeLogStatus @default(TODO)
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+
+  // Relations
+  projectId String
+  project   Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("time_logs")
+  @@index([projectId])
+  @@index([userId])
+  @@index([logDate])
+}
